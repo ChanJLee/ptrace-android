@@ -13,7 +13,7 @@ public class Main {
 	public static void main(String[] args) {
 		System.out.println("start...");
 		try {
-			Process process = Runtime.getRuntime().exec("./data/local/tmp/drizzleDumper com.chan.fuckdex 5");
+			Process process = Runtime.getRuntime().exec("su; ./data/local/tmp/drizzleDumper com.chan.fuckdex 5");
 //			Thread thread = new Thread(new FOO(process.getInputStream()));
 //			thread.start();
 			InputStreamReader reader = new InputStreamReader(process.getInputStream());
