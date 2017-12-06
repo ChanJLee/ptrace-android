@@ -1,10 +1,20 @@
 #include <jni.h>
 #include <string>
 #include <fstream>
+#include "drizzleDumper.h"
 
-extern "C"
+extern "C" {
+
+JNIEXPORT void JNICALL
+Java_com_chan_fuckdex_MainActivity_ptrace(JNIEnv *env, jobject instance, jstring pkg_,
+                                          jdouble duration) {
+    const char *pkg = env->GetStringUTFChars(pkg_, 0);
+    fuck_dex(pkg, duration);
+    env->ReleaseStringUTFChars(pkg_, pkg);
+}
+
 JNIEXPORT jlong JNICALL
-Java_com_chan_fuckdex_MainActivity_stringFromJNI(
+Java_com_chan_fuckdex_MainActivity_readDex(
         JNIEnv *env,
         jobject /* this */) {
 
@@ -27,4 +37,5 @@ Java_com_chan_fuckdex_MainActivity_stringFromJNI(
     in.close();
 
     return (jlong) buffer;
+}
 }
