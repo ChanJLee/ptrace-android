@@ -19,6 +19,8 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_CFLAGS += -fPIE
 LOCAL_LDFLAGS += -fPIE -pie
 
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog
+
 include $(BUILD_EXECUTABLE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
