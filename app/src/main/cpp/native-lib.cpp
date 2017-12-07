@@ -36,6 +36,8 @@ Java_com_chan_fuckdex_MainActivity_readDex(
     //还有些检查流状态，上一次操作状态函数
     in.close();
 
+    LOGI("size: %d", len);
+
     return (jlong) buffer;
 }
 }

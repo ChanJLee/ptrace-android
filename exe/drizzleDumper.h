@@ -34,11 +34,13 @@ typedef signed int s4;
 typedef signed long long s8;
 #endif
 
-#include <android/log.h>
-
-#define  LOG_TAG    "DexDumper"
-
-#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#ifdef ANDROID_CMAKE
+    #include <android/log.h>
+    #define  LOG_TAG    "DexDumper"
+    #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
+    #define  LOGI(...)  printf(__VA_ARGS__)
+#endif
 
 /*
  * define kSHA1DigestLen

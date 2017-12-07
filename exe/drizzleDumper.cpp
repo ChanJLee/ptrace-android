@@ -7,11 +7,10 @@
 std::vector<memory_region *> result_container;
 
 int main(int argc, char *argv[]) {
-
     const char *package_name = "com.chan.fuckdex";
     double wait_times = 3;
     if (getuid() != 0) {
-        LOGI("Device Not root!\n");
+        LOGI("device not root!\n");
         return -1;
     }
 
@@ -52,7 +51,7 @@ int main(int argc, char *argv[]) {
                 strlen(SAFE_LOCATION) + strlen(package_name) + strlen(SUFFIX));
         sprintf(dumped_file_name, "%s%s%s", SAFE_LOCATION, package_name, SUFFIX);
 
-        LOGI("Scanning dex ...\n");
+        LOGI("scan dex ...\n");
         memory_region *memory = new memory_region;
         int result = find_magic_memory(clone_pid, mem_file, memory, dumped_file_name);
         if (result <= 0) {
@@ -111,7 +110,6 @@ uint32_t get_process_pid(const char *target_package_name) {
 
         if (directory_entry == NULL)
             return -1;
-
         if (strcmp(directory_entry->d_name, "self") == 0 ||
             strcmp(directory_entry->d_name, self_pid) == 0)
             continue;
@@ -157,6 +155,22 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
                mem_info);
         memset(mem_line, 0, 1024);
 
+        //忽略 ttf so
+        size_t mem_info_string_len = strlen(mem_info);
+        if (mem_info_string_len != 0) {
+            size_t dot_start_index = strlen(mem_info) - 1;
+            for (; dot_start_index != 0; --dot_start_index) {
+                if (mem_info[dot_start_index] == '.') {
+                    break;
+                }
+            }
+            char *suffix = mem_info + dot_start_index;
+            if (!strcmp(suffix, ".ttf") || !strcmp(suffix, ".so")) {
+                //LOGI("ignore: %s\n", mem_info);
+                continue;
+            }
+        }
+
         memory->start = strtoul(mem_address_start, NULL, 16);
         memory->end = strtoul(mem_address_end, NULL, 16);
 
@@ -180,65 +194,45 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
         if (r1 != -1) {
             char *buffer = (char *) malloc(len);
             ssize_t readlen = read(memory_fd, buffer, len);
-            if (buffer[1] == 'E' && buffer[2] == 'L' && buffer[3] == 'F') {
-                LOGI("find ELF, ignore");
-                free(buffer);
-                continue;
-            }
 
-            if (buffer[0] == 'd' &&
-                buffer[1] == 'e' &&
-                buffer[2] == 'x' &&
-                buffer[3] == '\n' &&
-                buffer[4] == '0' &&
-                buffer[5] == '3') {
-                LOGI(" [+] find dex, len : %d , info : %s\n", readlen, mem_info);
-                DexHeader header;
-                char real_lenstr[10] = {0};
-                memcpy(&header, buffer, sizeof(DexHeader));
-                sprintf(real_lenstr, "%x", header.fileSize);
-                long real_lennum = strtol(real_lenstr, NULL, 16);
-                LOGI(" [+] This dex's fileSize: %d\n", real_lennum);
+            for (int i = 0; i < readlen; ++i) {
+                if (buffer[i] == 0x64 &&
+                    i + 8 < readlen &&
+                    buffer[i + 1] == 0x65 &&
+                    buffer[i + 2] == 0x78 &&
+                    buffer[i + 3] == 0x0A &&
+                    buffer[i + 4] == 0x30 &&
+                    buffer[i + 5] == 0x33 &&
+                    buffer[i + 6] == 0x35 &&
+                    buffer[i + 7] == 0x00) {
 
+                    if (i + sizeof(DexHeader) < readlen) {
+                        DexHeader header;
+                        char real_lenstr[10] = {0};
+                        memcpy(&header, buffer + i, sizeof(DexHeader));
+                        if (header.fileSize == 6176780) {
+                            LOGI("%s\n", mem_info);
+                        }
+                        LOGI("dex size: %d\n", header.fileSize, header.checksum);
+//                        if (header.fileSize + i >= readlen) {
+//                            break;
+//                        }
 
-                if (dump_memory(buffer, len, each_filename) == 1) {
-                    LOGI(" [+] dex dump into %s\n", each_filename);
-                    free(buffer);
-                    continue;
-                } else {
-                    LOGI(" [+] dex dump error \n");
+//                        sprintf(real_lenstr, "%x", header.fileSize);
+//                        long real_lennum = strtol(real_lenstr, NULL, 16);
+//                        LOGI(" [+] This dex's fileSize: %d\n", real_lennum);
+//                        if (dump_memory(buffer, len, each_filename) == 1) {
+//                            LOGI(" [+] dex dump into %s\n", each_filename);
+//                            free(buffer);
+//                            continue;
+//                        } else {
+//                            LOGI(" [+] dex dump error \n");
+//                        }
+                    }
+
                 }
             }
-            free(buffer);
-        }
 
-        lseek64(memory_fd, 0, SEEK_SET);    //保险，先归零
-        r1 = lseek64(memory_fd, memory->start + 8, SEEK_SET);//不用 pread，因为pread用的是lseek
-        if (r1 != -1) {
-            char *buffer = (char *) malloc(len);
-            ssize_t readlen = read(memory_fd, buffer, len);
-            if (buffer[0] == 'd' &&
-                buffer[1] == 'e' &&
-                buffer[2] == 'x' &&
-                buffer[3] == '\n'
-                && buffer[4] == '0'
-                && buffer[5] == '3') {
-                LOGI(" [+] Find dex! memory len : %d \n", readlen);
-                DexHeader header;
-                char real_lenstr[10] = {0};
-                memcpy(&header, buffer, sizeof(DexHeader));
-                sprintf(real_lenstr, "%x", header.fileSize);
-                long real_lennum = strtol(real_lenstr, NULL, 16);
-                LOGI(" [+] This dex's fileSize: %d\n", real_lennum);
-
-                if (dump_memory(buffer, len, each_filename) == 1) {
-                    LOGI(" [+] dex dump into %s\n", each_filename);
-                    free(buffer);
-                    continue;    //如果本次成功了，就不尝试其他方法了
-                } else {
-                    LOGI(" [+] dex dump error \n");
-                }
-            }
             free(buffer);
         }
     }
@@ -276,8 +270,7 @@ int attach_get_memory(uint32_t pid) {
 
     if (0 != ret) {
         int err = errno;    //这时获取errno
-        if (err == 1) //EPERM
-        {
+        if (err == 1) {
             return -30903;    //代表已经被跟踪或无法跟踪
         } else {
             return -10201;    //其他错误(进程不存在或非法操作)
