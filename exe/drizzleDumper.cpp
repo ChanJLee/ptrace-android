@@ -181,23 +181,24 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
         }
 
         uint32_t len = memory->end - memory->start;
+
         char each_filename[254] = {0};
-        char randstr[10] = {0};
-        sprintf(randstr, "%d", result_container.size());
+        char rand_str[10] = {0};
+        sprintf(rand_str, "%d", result_container.size());
 
         strncpy(each_filename, file_name, 200);    //防溢出
-        strncat(each_filename, randstr, 10);
+        strncat(each_filename, rand_str, 10);
         strncat(each_filename, ".dex", 4);
 
         lseek64(memory_fd, 0, SEEK_SET);    //保险，先归零
         off_t r1 = lseek64(memory_fd, memory->start, SEEK_SET);
         if (r1 != -1) {
             char *buffer = (char *) malloc(len);
-            ssize_t readlen = read(memory_fd, buffer, len);
+            ssize_t read_len = read(memory_fd, buffer, len);
 
-            for (int i = 0; i < readlen; ++i) {
+            for (int i = 0; i < read_len; ++i) {
                 if (buffer[i] == 0x64 &&
-                    i + 8 < readlen &&
+                    i + 8 < read_len &&
                     buffer[i + 1] == 0x65 &&
                     buffer[i + 2] == 0x78 &&
                     buffer[i + 3] == 0x0A &&
@@ -206,28 +207,23 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
                     buffer[i + 6] == 0x35 &&
                     buffer[i + 7] == 0x00) {
 
-                    if (i + sizeof(DexHeader) < readlen) {
+                    if (i + sizeof(DexHeader) < read_len) {
                         DexHeader header;
-                        char real_lenstr[10] = {0};
                         memcpy(&header, buffer + i, sizeof(DexHeader));
-                        if (header.fileSize == 6176780) {
-                            LOGI("%s\n", mem_info);
+                        if (header.fileSize + i >= read_len || header.fileSize != 6176780) {
+                            break;
                         }
-                        LOGI("dex size: %d\n", header.fileSize, header.checksum);
-//                        if (header.fileSize + i >= readlen) {
-//                            break;
-//                        }
 
-//                        sprintf(real_lenstr, "%x", header.fileSize);
-//                        long real_lennum = strtol(real_lenstr, NULL, 16);
-//                        LOGI(" [+] This dex's fileSize: %d\n", real_lennum);
-//                        if (dump_memory(buffer, len, each_filename) == 1) {
-//                            LOGI(" [+] dex dump into %s\n", each_filename);
-//                            free(buffer);
-//                            continue;
-//                        } else {
-//                            LOGI(" [+] dex dump error \n");
-//                        }
+                        LOGI("file size: %d", header.fileSize);
+                        int size = dump_memory(buffer, i, header.fileSize, each_filename);
+                        if (size > 0) {
+                            i += size;
+                            LOGI(" [+] dex dump into %s\n", each_filename);
+                            free(buffer);
+                            continue;
+                        } else {
+                            LOGI(" [+] dex dump error \n");
+                        }
                     }
 
                 }
@@ -244,17 +240,12 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
 /*
  * Dump buffer from Mem to file.
  */
-int dump_memory(const char *buffer, int len, char each_filename[]) {
-    int ret = -1;
+int dump_memory(const char *buffer, int offset, int len, char each_filename[]) {
     FILE *dump = fopen(each_filename, "wb");
-    if (fwrite(buffer, len, 1, dump) != 1) {
-        ret = -1;
-    } else {
-        ret = 1;
-    }
-
+    int result = fwrite(buffer + offset, sizeof(char), len, dump);
+    LOGI("write file: %d", result);
     fclose(dump);
-    return ret;
+    return result != -1 ? len : -1;
 }
 
 // Perform all that ptrace magic

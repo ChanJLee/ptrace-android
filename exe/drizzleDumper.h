@@ -80,7 +80,7 @@ typedef struct DexHeader {
 } DexHeader;
 
 //#define ORIG_EAX 11
-static const char *SAFE_LOCATION = "/data/local/tmp/";
+static const char *SAFE_LOCATION = "/sdcard/result/";
 static const char *SUFFIX = "_dumped_";
 
 typedef struct {
@@ -95,7 +95,7 @@ uint32_t get_process_pid(const char *target_package_name);
 int
 find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, const char *file_name);
 
-int dump_memory(const char *buffer, int len, char each_filename[]);
+int dump_memory(const char *buffer, int offset, int len, char each_filename[]);
 
 int attach_get_memory(uint32_t pid);
 
