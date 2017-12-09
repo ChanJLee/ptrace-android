@@ -171,6 +171,10 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
         }
 
         uint32_t len = memory->end - memory->start;
+        if(len <= 10000 || len >= 150000000) {
+            continue;
+        }
+
         char each_filename[254] = {0};
         char randstr[10] = {0};
         sprintf(randstr, "%d", result_container.size());

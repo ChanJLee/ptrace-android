@@ -7,7 +7,7 @@
 std::vector<memory_region *> result_container;
 
 int main(int argc, char *argv[]) {
-    const char *package_name = "com.chan.fuckdex";
+    const char *package_name = "com.yingwoo.yingwoxiaoyuan";
     double wait_times = 3;
     if (getuid() != 0) {
         LOGI("device not root!\n");
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
         memory_region *memory = new memory_region;
         int result = find_magic_memory(clone_pid, mem_file, memory, dumped_file_name);
         if (result <= 0) {
-            LOGI("The magic was Not Found! code: %d\n", result);
+            LOGI("The magic was not found! code: %d\n", result);
             ptrace(PTRACE_DETACH, clone_pid, NULL, 0);
             close(mem_file);
             delete memory;
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    LOGI("Done.\n\n");
+    LOGI("done\n\n");
     return 0;
 }
 
@@ -134,9 +134,10 @@ uint32_t get_process_pid(const char *target_package_name) {
     return -1;
 }
 
+int release_id = 0;
+
 int
 find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, const char *file_name) {
-    int ret = 0;
     char maps[2048];
 
     snprintf(maps, sizeof(maps), "/proc/%d/maps", clone_pid);
@@ -181,15 +182,6 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
         }
 
         uint32_t len = memory->end - memory->start;
-
-        char each_filename[254] = {0};
-        char rand_str[10] = {0};
-        sprintf(rand_str, "%d", result_container.size());
-
-        strncpy(each_filename, file_name, 200);    //防溢出
-        strncat(each_filename, rand_str, 10);
-        strncat(each_filename, ".dex", 4);
-
         lseek64(memory_fd, 0, SEEK_SET);    //保险，先归零
         off_t r1 = lseek64(memory_fd, memory->start, SEEK_SET);
         if (r1 != -1) {
@@ -210,16 +202,29 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
                     if (i + sizeof(DexHeader) < read_len) {
                         DexHeader header;
                         memcpy(&header, buffer + i, sizeof(DexHeader));
-                        if (header.fileSize + i >= read_len || header.fileSize != 6176780) {
+                        if (header.fileSize + i >= read_len) {
                             break;
                         }
+//                        if (buffer[0x28] != 0x78 ||
+//                            buffer[0x29] != 0x56 ||
+//                            buffer[0x2A] != 0x34 ||
+//                            buffer[0x2B] != 0x12) {
+//                            break;
+//                        }
 
-                        LOGI("file size: %d", header.fileSize);
+                        LOGI("file size: %d, current index: %d\n", header.fileSize, i);
+                        char each_filename[254] = {0};
+                        char rand_str[10] = {0};
+                        sprintf(rand_str, "%d", release_id++);
+
+                        strncpy(each_filename, file_name, 200);    //防溢出
+                        strncat(each_filename, rand_str, 10);
+                        strncat(each_filename, ".dex", 4);
                         int size = dump_memory(buffer, i, header.fileSize, each_filename);
                         if (size > 0) {
                             i += size;
-                            LOGI(" [+] dex dump into %s\n", each_filename);
-                            free(buffer);
+                            LOGI(" [+] dex dump into %s, next pos: %d, len: %d\n", each_filename, i,
+                                 read_len);
                             continue;
                         } else {
                             LOGI(" [+] dex dump error \n");
@@ -234,7 +239,7 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
     }
 
     fclose(maps_file);
-    return ret;
+    return 1;
 }
 
 /*
