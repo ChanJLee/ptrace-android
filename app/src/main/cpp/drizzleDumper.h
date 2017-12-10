@@ -95,8 +95,7 @@ uint32_t get_clone_pid(uint32_t service_pid);
 
 uint32_t get_process_pid(const char *target_package_name);
 
-int
-find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, const char *file_name);
+int find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, const char *file_name);
 
 int dump_memory(const char *buffer, int len, char each_filename[]);
 

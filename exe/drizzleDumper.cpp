@@ -14,7 +14,6 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    result_container.clear();
     uint32_t pid = -1;
     int mem_file;
     uint32_t clone_pid;
