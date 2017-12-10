@@ -86,6 +86,11 @@ typedef struct {
     uint32_t end;
 } memory_region;
 
+typedef struct {
+    memory_region *region;
+    u1 sha1[kSHA1DigestLen];
+} Dex;
+
 uint32_t get_clone_pid(uint32_t service_pid);
 
 uint32_t get_process_pid(const char *target_package_name);

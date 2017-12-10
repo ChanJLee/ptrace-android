@@ -7,10 +7,12 @@ APP_STL := stlport_static
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
-  drizzleDumper.cpp
+  drizzleDumper.cpp \
+  sha1.cpp
 LOCAL_C_INCLUDE := \
   drizzleDumper.h \
-  definitions.h  
+  definitions.h  \
+  sha1.h
 
 LOCAL_MODULE := drizzleDumper
 LOCAL_MODULE_TAGS := optional

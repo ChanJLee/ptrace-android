@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
     uint32_t clone_pid;
     char *dumped_file_name;
 
+    LOGI("prepare in %d seconds", wait_times);
     for (;;) {
         //wait some time
         sleep(wait_times);
@@ -176,7 +177,7 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
         memory->end = strtoul(mem_address_end, NULL, 16);
 
         for (int i = 0; i < result_container.size(); ++i) {
-            if (result_container[i]->start == memory->start) {
+            if (result_container[i].region->start == memory->start) {
                 return -2;
             }
         }
@@ -205,12 +206,6 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
                         if (header.fileSize + i >= read_len) {
                             break;
                         }
-//                        if (buffer[0x28] != 0x78 ||
-//                            buffer[0x29] != 0x56 ||
-//                            buffer[0x2A] != 0x34 ||
-//                            buffer[0x2B] != 0x12) {
-//                            break;
-//                        }
 
                         LOGI("file size: %d, current index: %d\n", header.fileSize, i);
                         char each_filename[254] = {0};
