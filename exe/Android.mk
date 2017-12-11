@@ -7,14 +7,16 @@ APP_STL := stlport_static
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
-  drizzleDumper.cpp \
-  sha1.cpp
+  sha1.cpp \
+  dex_killer.cpp \
+  main.cpp
+
 LOCAL_C_INCLUDE := \
-  drizzleDumper.h \
   definitions.h  \
+  dex_killer.h \
   sha1.h
 
-LOCAL_MODULE := drizzleDumper
+LOCAL_MODULE := dex_killer
 LOCAL_MODULE_TAGS := optional
 
 # Allow execution on android-16+

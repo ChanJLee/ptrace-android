@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     uint32_t clone_pid;
     char *dumped_file_name;
 
-    LOGI("prepare in %d seconds", wait_times);
+    LOGI("prepare in %f seconds\n", wait_times);
     for (;;) {
         //wait some time
         sleep(wait_times);
@@ -97,7 +97,7 @@ uint32_t get_clone_pid(uint32_t service_pid) {
 }
 
 uint32_t get_process_pid(const char *target_package_name) {
-    char self_pid[10];
+    char self_pid[10] = {0};
     sprintf(self_pid, "%u", getpid());
 
     DIR *proc = NULL;
@@ -176,7 +176,7 @@ find_magic_memory(uint32_t clone_pid, int memory_fd, memory_region *memory, cons
         memory->end = strtoul(mem_address_end, NULL, 16);
 
         for (int i = 0; i < result_container.size(); ++i) {
-            if (result_container[i].region->start == memory->start) {
+            if (result_container[i]->start == memory->start) {
                 return -2;
             }
         }

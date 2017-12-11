@@ -10,8 +10,7 @@ build:
 	ndk-build APP_ABI="armeabi" NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk
 
 install:
-	adb push libs/armeabi/drizzleDumper /data/local/tmp/
-	#adb push libs/x86/drizzleDumper /data/local/tmp/
+	adb push libs/armeabi/dex_killer /data/local/tmp/
 
 clean:
 	rm -rf *.c~
