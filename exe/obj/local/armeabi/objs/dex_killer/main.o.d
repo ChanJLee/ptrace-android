@@ -13,9 +13,6 @@
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/config/_native_headers.h \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_epilog.h \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_config_compat_post.h \
-  /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stdarg.h \
-  /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/string.h \
-  /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/errno.h \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/vector \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_prolog.h \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/debug/_debug.h \
@@ -23,6 +20,7 @@
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_cstddef.h \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stddef.h \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_cstring.h \
+  /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/string.h \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/using/cstring \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/climits \
   /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/limits.h \
@@ -139,12 +137,6 @@ dex_killer.h:
 
 /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_config_compat_post.h:
 
-/Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stdarg.h:
-
-/Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/string.h:
-
-/Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/errno.h:
-
 /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/vector:
 
 /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_prolog.h:
@@ -158,6 +150,8 @@ dex_killer.h:
 /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stddef.h:
 
 /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/stl/_cstring.h:
+
+/Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/string.h:
 
 /Users/chan/Library/android/sdk/ndk-bundle/sources/cxx-stl/stlport/stlport/using/cstring:
 

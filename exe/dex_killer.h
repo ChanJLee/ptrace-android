@@ -6,16 +6,7 @@
 #define FUCKDEX_DEX_KILLER_H
 
 #include <stdio.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/ptrace.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <sys/user.h>
 #include <vector>
 #include <string>
 
@@ -43,6 +34,7 @@ typedef signed long long s8;
 #undef SHA1_LEN
 #define SHA1_LEN 20
 
+#undef LOGI
 #define  LOGI(...)  printf(__VA_ARGS__)
 
 typedef struct {

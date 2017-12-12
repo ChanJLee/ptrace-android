@@ -5,6 +5,14 @@
 #include <stdlib.h>
 #include <sstream>
 #include <dirent.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <errno.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/user.h>
 
 pid_t find_pid(const std::string &pkg) {
     if (pkg.empty()) {
