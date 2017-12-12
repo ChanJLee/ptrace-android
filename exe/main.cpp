@@ -39,5 +39,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    int mem_fd = find_mem_file(tid);
+    std::cout << "mem fd: " << mem_fd << std::endl;
+    if (mem_fd <= 0) {
+        return 1;
+    }
+    std::vector<std::string> result_container;
+    scan_memory(result_container, "/sdcard/", tid, mem_fd);
+    close(mem_fd);
+
     return 0;
 }

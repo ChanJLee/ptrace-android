@@ -5,19 +5,8 @@
 #ifndef FUCKDEX_DEX_KILLER_H
 #define FUCKDEX_DEX_KILLER_H
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <dirent.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/ptrace.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <sys/user.h>
 #include <vector>
 #include <string>
 
@@ -45,6 +34,7 @@ typedef signed long long s8;
 #undef SHA1_LEN
 #define SHA1_LEN 20
 
+#undef LOGI
 #define  LOGI(...)  printf(__VA_ARGS__)
 
 typedef struct {
@@ -73,10 +63,24 @@ typedef struct {
     u4 dataOff;
 } DexHeader;
 
+typedef struct {
+    uint32_t start;
+    uint32_t end;
+} MemoryRegion;
+
+typedef struct {
+    u1 *buffer;
+    size_t len;
+} DexSegment;
 
 pid_t find_pid(const std::string &pkg);
+
 pid_t find_tid(const pid_t pid);
+
 int find_mem_file(const pid_t tid);
 
+void scan_memory(std::vector<std::string> &result_container, const std::string &save_to_dir, int tid, int mem_fd);
+
+int copy_memory(const u1 *buffer, ssize_t offset, ssize_t len, const std::string &save_to);
 
 #endif //FUCKDEX_DEX_KILLER_H
